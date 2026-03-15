@@ -1,7 +1,8 @@
 import { createInterface } from 'node:readline';
 import os from 'node:os';
+import { changeDirectory, goUp, listDirectory } from './navigation.js';
 
-const startRepl = () => {
+const startRepl = async () => {
     let currentDir = os.homedir();
     const rl = createInterface({
         input: process.stdin,
@@ -14,19 +15,37 @@ const startRepl = () => {
         cwd: () => console.log(currentDir),
         date: () => console.log(new Date().toISOString()),
         exit: () => exitProgram(rl),
+        cd: async (targetPath) => {
+            currentDir = await changeDirectory(currentDir, targetPath);
+            printCurrentDir(currentDir);
+        },
+        up: async () => {
+            currentDir = await goUp(currentDir);
+            printCurrentDir(currentDir);
+        },
+        ls: async () => {
+            await listDirectory(currentDir);
+            printCurrentDir(currentDir);
+        },
     }
 
     rl.prompt();
     printCurrentDir(currentDir);
 
-    rl.on('line', (line) => {
-        const command = line.trim();
-        if (commands[command]) {
-            commands[command]();
-        } else {
-            console.log('Unknown command');
-        }
-        if (command !== 'exit') {
+    rl.on('line', async (line) => {
+        try {
+            const commandLine = line.trim();
+            const [command, ...args] = commandLine.split(' ');
+            if (commands[command]) {
+                await commands[command](...args);
+            } else {
+                console.log('Unknown command');
+            }
+            if (command !== 'exit') {
+                rl.prompt();
+            }
+        } catch (error) {
+            console.error('Operation failed');
             rl.prompt();
         }
     });
