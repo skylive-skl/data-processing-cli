@@ -79,7 +79,6 @@ const startRepl = async () => {
 			const commandLine = line.trim();
 
 			const { command, args, options } = parseCommandLine(commandLine);
-			console.log(command, args, options)
 			if (commands[command]) {
 				await commands[command](options, args);
 			} else {
