@@ -7,6 +7,7 @@ import { InputError } from './errors.js';
 import { runHash } from './commands/hash.js';
 import { runHashCompare } from './commands/hashCompare.js';
 import { runCsvToJson } from './commands/csvToJson.js';
+import { runJsonToCsv } from './commands/jsonToCsv.js';
 
 const startRepl = async () => {
 	let currentDir = os.homedir();
@@ -47,6 +48,10 @@ const startRepl = async () => {
 		},
 		"csv-to-json": async (options, args) => {
 			await runCsvToJson(currentDir, options, args);
+			printCurrentDir(currentDir);
+		},
+		"json-to-csv": async (options, args) => {
+			await runJsonToCsv(currentDir, options, args);
 			printCurrentDir(currentDir);
 		},
 	}
