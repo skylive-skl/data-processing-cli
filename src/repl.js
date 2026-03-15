@@ -6,6 +6,7 @@ import { runCount } from './commands/count.js';
 import { InputError } from './errors.js';
 import { runHash } from './commands/hash.js';
 import { runHashCompare } from './commands/hashCompare.js';
+import { runCsvToJson } from './commands/csvToJson.js';
 
 const startRepl = async () => {
 	let currentDir = os.homedir();
@@ -42,6 +43,10 @@ const startRepl = async () => {
 		},
 		"hash-compare": async (options, args) => {
 			await runHashCompare(currentDir, options, args);
+			printCurrentDir(currentDir);
+		},
+		"csv-to-json": async (options, args) => {
+			await runCsvToJson(currentDir, options, args);
 			printCurrentDir(currentDir);
 		},
 	}
