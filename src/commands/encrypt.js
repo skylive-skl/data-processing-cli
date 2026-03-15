@@ -1,7 +1,6 @@
 import { createReadStream, createWriteStream } from 'node:fs';
 import { access, unlink } from 'node:fs/promises';
 import crypto from 'node:crypto';
-import { promisify } from 'node:util';
 import { finished } from 'node:stream/promises';
 import { resolvePath } from '../utils/pathResolver.js';
 import {
@@ -9,12 +8,12 @@ import {
   requireStringOption,
 } from '../utils/argParser.js';
 import { InputError } from '../errors.js';
-
-const scrypt = promisify(crypto.scrypt);
-
-const SALT_LENGTH = 16;
-const IV_LENGTH = 12;
-const KEY_LENGTH = 32;
+import { deriveKey } from '../utils/deriveKey.js';
+import {
+  SALT_LENGTH,
+  IV_LENGTH,
+  CIPHER_ALGORITHM,
+} from '../utils/cryptoConstants.js';
 
 export async function runEncrypt(currentDir, options) {
   if (!hasOnlyAllowedOptions(options, ['input', 'output', 'password'])) {
@@ -40,9 +39,9 @@ export async function runEncrypt(currentDir, options) {
 
   const salt = crypto.randomBytes(SALT_LENGTH);
   const iv = crypto.randomBytes(IV_LENGTH);
-  const key = await scrypt(options.password, salt, KEY_LENGTH);
+  const key = await deriveKey(options.password, salt);
 
-  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+  const cipher = crypto.createCipheriv(CIPHER_ALGORITHM, key, iv);
   const inputStream = createReadStream(inputPath);
   const outputStream = createWriteStream(outputPath);
 

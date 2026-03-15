@@ -9,6 +9,7 @@ import { runHashCompare } from './commands/hashCompare.js';
 import { runCsvToJson } from './commands/csvToJson.js';
 import { runJsonToCsv } from './commands/jsonToCsv.js';
 import { runEncrypt } from './commands/encrypt.js';
+import { runDecrypt } from './commands/decrypt.js';
 
 const startRepl = async () => {
 	let currentDir = os.homedir();
@@ -57,6 +58,10 @@ const startRepl = async () => {
 		},
 		encrypt: async (options, args) => {
 			await runEncrypt(currentDir, options, args);
+			printCurrentDir(currentDir);
+		},
+		decrypt: async (options, args) => {
+			await runDecrypt(currentDir, options, args);
 			printCurrentDir(currentDir);
 		},
 	}
