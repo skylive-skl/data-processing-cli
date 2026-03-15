@@ -1,6 +1,7 @@
 import { createInterface } from 'node:readline';
 import os from 'node:os';
 import { changeDirectory, goUp, listDirectory } from './navigation.js';
+import { parseCommandLine } from './utils/argParser.js';
 
 const startRepl = async () => {
     let currentDir = os.homedir();
@@ -15,15 +16,15 @@ const startRepl = async () => {
         cwd: () => console.log(currentDir),
         date: () => console.log(new Date().toISOString()),
         exit: () => exitProgram(rl),
-        cd: async (targetPath) => {
-            currentDir = await changeDirectory(currentDir, targetPath);
+        cd: async (options, args) => {
+            currentDir = await changeDirectory(currentDir, args[0]);
             printCurrentDir(currentDir);
         },
-        up: async () => {
+        up: async (options, args) => {
             currentDir = await goUp(currentDir);
             printCurrentDir(currentDir);
         },
-        ls: async () => {
+        ls: async (options, args) => {
             await listDirectory(currentDir);
             printCurrentDir(currentDir);
         },
@@ -35,9 +36,11 @@ const startRepl = async () => {
     rl.on('line', async (line) => {
         try {
             const commandLine = line.trim();
-            const [command, ...args] = commandLine.split(' ');
+
+            const { command, args, options } = parseCommandLine(commandLine);
+            console.log(command, args, options)
             if (commands[command]) {
-                await commands[command](...args);
+                await commands[command](options, args);
             } else {
                 console.log('Unknown command');
             }
