@@ -26,11 +26,11 @@ const startRepl = async () => {
 			currentDir = await changeDirectory(currentDir, args[0]);
 			printCurrentDir(currentDir);
 		},
-		up: async (options, args) => {
+		up: async () => {
 			currentDir = await goUp(currentDir);
 			printCurrentDir(currentDir);
 		},
-		ls: async (options, args) => {
+		ls: async () => {
 			await listDirectory(currentDir);
 			printCurrentDir(currentDir);
 		},
@@ -81,14 +81,14 @@ const startRepl = async () => {
 			} else {
 				console.log('Unknown command');
 			}
-			if (command !== 'exit') {
+			if (command !== '.exit') {
 				rl.prompt();
 			}
 		} catch (error) {
 			if (error instanceof InputError) {
 				console.error(error.message);
 			} else {
-				console.error('Operation failed', error.message);
+				console.error('Operation failed', error?.message ?? error);
 			}
 			rl.prompt();
 		}
