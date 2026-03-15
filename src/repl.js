@@ -3,6 +3,8 @@ import os from 'node:os';
 import { changeDirectory, goUp, listDirectory } from './navigation.js';
 import { parseCommandLine } from './utils/argParser.js';
 import { runCount } from './commands/count.js';
+import { InputError } from './errors.js';
+import { runHash } from './commands/hash.js';
 
 const startRepl = async () => {
 	let currentDir = os.homedir();
@@ -33,6 +35,10 @@ const startRepl = async () => {
 			await runCount(currentDir, options, args);
 			printCurrentDir(currentDir);
 		},
+		hash: async (options, args) => {
+			await runHash(currentDir, options, args);
+			printCurrentDir(currentDir);
+		},
 	}
 
 	rl.prompt();
@@ -53,7 +59,11 @@ const startRepl = async () => {
 				rl.prompt();
 			}
 		} catch (error) {
-			console.error('Operation failed');
+			if (error instanceof InputError) {
+				console.error(error.message);
+			} else {
+				console.error('Operation failed', error.message);
+			}
 			rl.prompt();
 		}
 	});

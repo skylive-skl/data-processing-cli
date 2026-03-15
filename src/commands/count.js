@@ -2,20 +2,18 @@ import { createReadStream } from 'node:fs';
 import { pipeline } from 'node:stream/promises';
 import { Writable } from 'node:stream';
 import { resolvePath } from '../utils/pathResolver.js';
-import {
-	// hasOnlyAllowedOptions,
-	// requireStringOption,
-} from '../utils/argParser.js';
+import { hasOnlyAllowedOptions, requireStringOption } from '../utils/argParser.js';
 import { access } from 'node:fs/promises';
+import { InputError } from '../errors.js';
 
 export async function runCount(currentDir, options) {
-	// if (!hasOnlyAllowedOptions(options, ['input'])) {
-	// 	throw new Error('Invalid input');
-	// }
+	if (!hasOnlyAllowedOptions(options, ['input'])) {
+		throw new InputError('Invalid input');
+	}
 
-	// if (!requireStringOption(options, 'input')) {
-	// 	throw new Error('Invalid input');
-	// }
+	if (!requireStringOption(options, 'input')) {
+		throw new InputError('Invalid input');
+	}
 
 	const inputPath = resolvePath(currentDir, options.input);
 
