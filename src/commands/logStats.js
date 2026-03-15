@@ -1,6 +1,6 @@
-import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
+import { access, open, stat } from 'node:fs/promises';
+import { createWriteStream } from 'node:fs';
+import { cpus } from 'node:os';
 import { Worker } from 'node:worker_threads';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
@@ -27,9 +27,9 @@ export async function runLogStats(currentDir, options) {
   const inputPath = resolvePath(currentDir, options.input);
   const outputPath = resolvePath(currentDir, options.output);
 
-  await fs.promises.access(inputPath);
+  await access(inputPath);
 
-  const fileStat = await fs.promises.stat(inputPath);
+  const fileStat = await stat(inputPath);
 
   if (fileStat.size === 0) {
     const emptyResult = {
@@ -44,7 +44,7 @@ export async function runLogStats(currentDir, options) {
     return;
   }
 
-  const workerCount = Math.max(1, os.cpus().length);
+  const workerCount = Math.max(1, cpus().length);
   const chunks = await createLineAlignedChunks(inputPath, fileStat.size, workerCount);
 
   const partialResults = await Promise.all(
@@ -58,7 +58,7 @@ export async function runLogStats(currentDir, options) {
 
 async function createLineAlignedChunks(filePath, fileSize, workerCount) {
   const approxChunkSize = Math.ceil(fileSize / workerCount);
-  const handle = await fs.promises.open(filePath, 'r');
+  const handle = await open(filePath, 'r');
 
   try {
     const chunks = [];
@@ -194,6 +194,6 @@ async function writeJsonToFile(filePath, data) {
 
   await pipeline(
     Readable.from([content]),
-    fs.createWriteStream(filePath),
+    createWriteStream(filePath),
   );
 }

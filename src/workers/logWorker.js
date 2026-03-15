@@ -1,4 +1,4 @@
-import fs, { createReadStream } from 'node:fs';
+import { createReadStream } from 'node:fs';
 import { Writable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { parentPort, workerData } from 'node:worker_threads';
