@@ -8,6 +8,7 @@ import { runHash } from './commands/hash.js';
 import { runHashCompare } from './commands/hashCompare.js';
 import { runCsvToJson } from './commands/csvToJson.js';
 import { runJsonToCsv } from './commands/jsonToCsv.js';
+import { runEncrypt } from './commands/encrypt.js';
 
 const startRepl = async () => {
 	let currentDir = os.homedir();
@@ -52,6 +53,10 @@ const startRepl = async () => {
 		},
 		"json-to-csv": async (options, args) => {
 			await runJsonToCsv(currentDir, options, args);
+			printCurrentDir(currentDir);
+		},
+		encrypt: async (options, args) => {
+			await runEncrypt(currentDir, options, args);
 			printCurrentDir(currentDir);
 		},
 	}
