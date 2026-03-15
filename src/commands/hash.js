@@ -1,17 +1,14 @@
-import { createReadStream } from 'node:fs';
-import crypto from 'node:crypto';
-import { pipeline } from 'node:stream/promises';
-import { Writable } from 'node:stream';
+import { access, writeFile } from 'node:fs/promises';
 import { resolvePath } from '../utils/pathResolver.js';
 import {
   hasOnlyAllowedOptions,
   requireStringOption,
 } from '../utils/argParser.js';
-
 import { InputError } from '../errors.js';
-import { access, writeFile } from 'node:fs/promises';
-
-const SUPPORTED_ALGORITHMS = ['sha256', 'md5', 'sha512'];
+import {
+  calculateFileHash,
+  SUPPORTED_HASH_ALGORITHMS,
+} from '../utils/fileHash.js';
 
 export async function runHash(currentDir, options) {
   if (!hasOnlyAllowedOptions(options, ['input', 'algorithm', 'save'])) {
@@ -22,44 +19,24 @@ export async function runHash(currentDir, options) {
     throw new InputError();
   }
 
+  if (options.save !== undefined && options.save !== true) {
+    throw new InputError();
+  }
+
   const algorithm = options.algorithm ?? 'sha256';
 
   if (typeof algorithm !== 'string') {
     throw new InputError();
   }
 
-  if (options.save !== undefined && options.save !== true) {
-    throw new InputError();
-  }
-
-  if (!SUPPORTED_ALGORITHMS.includes(algorithm)) {
+  if (!SUPPORTED_HASH_ALGORITHMS.includes(algorithm)) {
     throw new Error('Unsupported algorithm');
   }
 
-
   const inputPath = resolvePath(currentDir, options.input);
-
   await access(inputPath);
 
-  const hash = crypto.createHash(algorithm);
-
-  const sink = new Writable({
-    write(chunk, encoding, callback) {
-      try {
-        hash.update(chunk);
-        callback();
-      } catch (error) {
-        callback(error);
-      }
-    },
-  });
-
-  await pipeline(
-    createReadStream(inputPath),
-    sink,
-  );
-
-  const digest = hash.digest('hex');
+  const digest = await calculateFileHash(inputPath, algorithm);
 
   console.log(`${algorithm}: ${digest}`);
 

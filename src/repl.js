@@ -5,6 +5,7 @@ import { parseCommandLine } from './utils/argParser.js';
 import { runCount } from './commands/count.js';
 import { InputError } from './errors.js';
 import { runHash } from './commands/hash.js';
+import { runHashCompare } from './commands/hashCompare.js';
 
 const startRepl = async () => {
 	let currentDir = os.homedir();
@@ -37,6 +38,10 @@ const startRepl = async () => {
 		},
 		hash: async (options, args) => {
 			await runHash(currentDir, options, args);
+			printCurrentDir(currentDir);
+		},
+		"hash-compare": async (options, args) => {
+			await runHashCompare(currentDir, options, args);
 			printCurrentDir(currentDir);
 		},
 	}
