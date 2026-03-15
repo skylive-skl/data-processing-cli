@@ -21,10 +21,7 @@ const startRepl = async () => {
 	});
 
 	const commands = {
-		uptime: () => console.log(`Uptime: ${process.uptime().toFixed(2)}s`),
-		cwd: () => console.log(currentDir),
-		date: () => console.log(new Date().toISOString()),
-		exit: () => exitProgram(rl),
+		".exit": () => exitProgram(rl),
 		cd: async (options, args) => {
 			currentDir = await changeDirectory(currentDir, args[0]);
 			printCurrentDir(currentDir);
