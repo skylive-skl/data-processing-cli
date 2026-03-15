@@ -10,6 +10,7 @@ import { runCsvToJson } from './commands/csvToJson.js';
 import { runJsonToCsv } from './commands/jsonToCsv.js';
 import { runEncrypt } from './commands/encrypt.js';
 import { runDecrypt } from './commands/decrypt.js';
+import { runLogStats } from './commands/logStats.js';
 
 const startRepl = async () => {
 	let currentDir = os.homedir();
@@ -62,6 +63,10 @@ const startRepl = async () => {
 		},
 		decrypt: async (options, args) => {
 			await runDecrypt(currentDir, options, args);
+			printCurrentDir(currentDir);
+		},
+		"log-stats": async (options, args) => {
+			await runLogStats(currentDir, options, args);
 			printCurrentDir(currentDir);
 		},
 	}
